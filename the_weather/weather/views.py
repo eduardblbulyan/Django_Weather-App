@@ -6,9 +6,18 @@ from .forms import CityForm
 def index(request):
     url = 'https://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid=27f746592bf575aef976b1677b2f7e5d'
 
+    err_msg = ''
+
     if request.method == 'POST':
         form = CityForm(request.POST)
-        form.save()
+        if form.is_valid():
+            new_city = form.cleaned_data['name']
+            existing_city_count = City.objects.filter(name=new_city).count()
+            if existing_city_count == 0:
+                form.save()
+            else:
+                err_msg = 'City already exists in database!'
+
 
     form = CityForm()
 
